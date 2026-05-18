@@ -1,63 +1,78 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import UptimeTab from '@/components/UptimeTab';
+import MessagingTab from '@/components/MessagingTab';
+import TrialTab from '@/components/TrialTab';
+
+export default function Dashboard() {
+  const [activeTab, setActiveTab] = useState<'uptime' | 'messaging' | 'trials'>('uptime');
+
+  const tabs = [
+    { id: 'uptime', label: 'Bot Uptime' },
+    { id: 'messaging', label: 'Send Message' },
+    { id: 'trials', label: 'Clan Trials' },
+  ] as const;
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans p-6 md:p-12 selection:bg-indigo-500/30">
+      {/* Background Glow Effect */}
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
+
+      <main className="max-w-5xl mx-auto relative z-10">
+        {/* Header */}
+        <header className="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-6">
+          <div>
+            <h1 className="text-3xl font-black tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
+              Clan Bot HQ
+            </h1>
+            <p className="text-slate-400 text-sm mt-1">Manage bot commands, uptime monitoring, and trial applications.</p>
+          </div>
+          <div className="flex items-center gap-3 bg-slate-900 border border-slate-800 px-4 py-2 rounded-xl text-xs font-semibold text-emerald-400">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            Connected to Discord API
+          </div>
+        </header>
+
+        {/* Navigation Tabs */}
+        <div className="flex gap-2 border-b border-slate-800 mb-8 p-1 bg-slate-900/50 backdrop-blur rounded-xl max-w-md">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`relative flex-1 py-2.5 text-sm font-medium transition-colors duration-200 rounded-lg z-10 ${
+                activeTab === tab.id ? 'text-white' : 'text-slate-400 hover:text-slate-200'
+              }`}
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+              {tab.label}
+              {activeTab === tab.id && (
+                <motion.div
+                  layoutId="active-tab"
+                  className="absolute inset-0 bg-indigo-600 rounded-lg -z-10"
+                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                />
+              )}
+            </button>
+          ))}
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        {/* Tab Content Section */}
+        <div className="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-6 backdrop-blur-md shadow-2xl min-h-[400px]">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.25, ease: "easeInOut" }}
+            >
+              {activeTab === 'uptime' && <UptimeTab />}
+              {activeTab === 'messaging' && <MessagingTab />}
+              {activeTab === 'trials' && <TrialTab />}
+            </motion.div>
+          </AnimatePresence>
         </div>
       </main>
     </div>
