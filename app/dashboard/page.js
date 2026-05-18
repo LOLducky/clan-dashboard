@@ -3,23 +3,19 @@
 import { useState, useEffect } from 'react';
 
 export default function AdminDashboard() {
-  // App Router Live Configurations
   const [channels, setChannels] = useState([]);
   const [channelId, setChannelId] = useState('');
   const [message, setMessage] = useState('');
   const [announcementStatus, setAnnouncementStatus] = useState({ type: '', text: '' });
 
-  // Recruiter States
   const [userId, setUserId] = useState('');
   const [reason, setReason] = useState('');
   const [appStatus, setAppStatus] = useState({ type: '', text: '' });
 
-  // Native Log System Feeds
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [networkError, setNetworkError] = useState(null);
 
-  // Core synchronization method
   const syncDashboardData = async () => {
     try {
       const res = await fetch('/api/get-bot-logs');
@@ -29,7 +25,6 @@ export default function AdminDashboard() {
         setLogs(data.logs || []);
         if (data.channels && data.channels.length > 0) {
           setChannels(data.channels);
-          // Auto select first loaded functional channel index if none active
           if (!channelId) setChannelId(data.channels[0].id);
         }
         setNetworkError(null);
@@ -37,7 +32,7 @@ export default function AdminDashboard() {
         setNetworkError(data.error || 'Failed to read operational framework data.');
       }
     } catch (err) {
-      setNetworkError('Fatal: Client cannot contact internal server routes.');
+      setNetworkError('Bot backend link down. Check DISCORD_BOT_URL on Vercel.');
     } finally {
       setLoading(false);
     }
@@ -95,17 +90,16 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div style={{ backgroundColor: '#0e0f11', color: '#e2e2e5', minHeight: '100vh', fontFamily: 'system-ui, sans-serif', padding: '40px 20px' }}>
-      <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+    <div style={{ display: 'block !important', position: 'relative', zIndex: 999999, backgroundColor: '#0e0f11', color: '#e2e2e5', minHeight: '100vh', width: '100vw', fontFamily: 'system-ui, sans-serif', padding: '40px 20px', boxSizing: 'border-box' }}>
+      <div style={{ maxWidth: '1000px', margin: '0 auto', display: 'block' }}>
         
-        {/* TOP LEVEL STATUS CONSOLE HEADER */}
         <header style={{ borderBottom: '1px solid #2d3139', paddingBottom: '24px', marginBottom: '32px' }}>
           <h1 style={{ fontSize: '2rem', fontWeight: '700', margin: 0, color: '#a8c7ff', letterSpacing: '-0.5px' }}>
             🛡️ DMG Command Terminal
           </h1>
           {networkError ? (
             <div style={{ display: 'inline-block', marginTop: '12px', padding: '6px 12px', backgroundColor: '#561214', border: '1px solid #ba1a1a', borderRadius: '6px', fontSize: '0.85rem', color: '#ffb4ab' }}>
-              ⚠️ Offline Alert: {networkError}
+              ⚠️ Connection Alert: {networkError}
             </div>
           ) : (
             <p style={{ color: '#909196', margin: '6px 0 0', fontSize: '0.9rem' }}>
@@ -114,10 +108,8 @@ export default function AdminDashboard() {
           )}
         </header>
 
-        {/* PRIMARY TERMINATION ACTIONS GRID */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '24px' }}>
           
-          {/* ANNOUNCEMENT BROADCAST WRAPPER */}
           <div style={{ backgroundColor: '#1b1c1f', padding: '24px', borderRadius: '12px', border: '1px solid #2d3139' }}>
             <h2 style={{ marginTop: 0, fontSize: '1.2rem', color: '#ffffff', marginBottom: '16px' }}>
               Broadcast Announcement
@@ -126,7 +118,9 @@ export default function AdminDashboard() {
               <div>
                 <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.8rem', color: '#c4c6d0', fontWeight: '600' }}>Destination Channel</label>
                 {channels.length === 0 ? (
-                  <select disabled style={inputStyle}><option>Awaiting backend synchronization...</option></select>
+                  <select disabled style={inputStyle}>
+                    <option>Loading live channels from bot...</option>
+                  </select>
                 ) : (
                   <select value={channelId} onChange={(e) => setChannelId(e.target.value)} style={inputStyle}>
                     {channels.map(ch => (
@@ -146,7 +140,6 @@ export default function AdminDashboard() {
             </form>
           </div>
 
-          {/* APPLICATION DIRECTIVE MANAGER */}
           <div style={{ backgroundColor: '#1b1c1f', padding: '24px', borderRadius: '12px', border: '1px solid #2d3139' }}>
             <h2 style={{ marginTop: 0, fontSize: '1.2rem', color: '#ffffff', marginBottom: '16px' }}>
               Recruitment Decisions
@@ -170,7 +163,6 @@ export default function AdminDashboard() {
 
         </div>
 
-        {/* ISOLATED LIVE AUDIT STREAM FEED */}
         <div style={{ backgroundColor: '#1b1c1f', padding: '24px', borderRadius: '12px', border: '1px solid #2d3139' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
             <h2 style={{ margin: 0, fontSize: '1.2rem', color: '#ffffff' }}>System Audit Feed Logs</h2>
@@ -203,7 +195,6 @@ export default function AdminDashboard() {
   );
 }
 
-// Styling Constants Configuration 
 const inputStyle = { width: '100%', padding: '10px 14px', borderRadius: '6px', backgroundColor: '#0e0f11', border: '1px solid #2d3139', color: '#e2e2e5', fontSize: '0.9rem', boxSizing: 'border-box', outline: 'none' };
 const textareaStyle = { width: '100%', padding: '10px 14px', borderRadius: '6px', backgroundColor: '#0e0f11', border: '1px solid #2d3139', color: '#e2e2e5', fontSize: '0.9rem', boxSizing: 'border-box', resize: 'none', outline: 'none' };
 const btnStyle = { border: 'none', padding: '10px 20px', borderRadius: '6px', fontWeight: '600', cursor: 'pointer', fontSize: '0.9rem' };
